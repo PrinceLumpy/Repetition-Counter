@@ -1,0 +1,11 @@
+
+Commands:
+  add <int>                   add <int> to day's total
+  sub <int>                   subtract <int> from day's total
+  new day                     reset daily_total to zero
+  new week                    reset weeky_total to zero
+  daily goal <int>            set weeky_total to <value>
+  weekly goal <int>           set weeky_total to <value>
+  display                     display data
+  quit                        exit program
+  help                        Show help for commands
