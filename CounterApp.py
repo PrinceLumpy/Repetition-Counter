@@ -56,31 +56,34 @@ def command_handler(command):
         if response == "" or response.lower() == "y":
             daily_total = 0
     # set goals
-    elif command.startswith("daily goal"):
+    elif command.startswith("reset goals"):
+        daily_goal = 600
+        weekly_goal = 3000
+    elif command.startswith("set daily goal"):
         try:
-            value = int(command.split(' ')[2])
+            value = int(command.split(' ')[3])
             if value < 1:
                 print("error: come on, you can't be THAT lazy")
                 return True
             if value > weekly_goal:
-                print("error: daily goal <value>, daily goal cannot be more than weekly goal")
+                print("error: set daily goal <value>, daily goal cannot be more than weekly goal")
                 return True
             daily_goal = value
         except:
-            print("error: daily goal <value>, <value> should be of type <int>")
+            print("error: set daily goal <value>, <value> should be of type <int>")
             return True
-    elif command.startswith("weekly goal"):
+    elif command.startswith("set weekly goal"):
         try:
-            value = int(command.split(' ')[2])
+            value = int(command.split(' ')[3])
             if value < 1:
                 print("error: come on, you can't be THAT lazy")
                 return True
             if value < daily_goal:
-                print("error: weekly goal <value>, weekly goal cannot be less than daily goal")
+                print("error: set weekly goal <value>, weekly goal cannot be less than daily goal")
                 return True
             weekly_goal = value
         except:
-            print("error: weekly goal <value>, <value> should be of type <int>")
+            print("error: set weekly goal <value>, <value> should be of type <int>")
             return True
     # daily operations
     elif command.startswith("add"):
