@@ -1,5 +1,5 @@
 import json
-
+import os.path
 
 #TODO:
 # change command to SET weekly goal/daily goal
@@ -121,18 +121,15 @@ def command_handler(command):
     save_data()
     
 
-def save_data():
-    try:
-        with open("goals-and-totals.json", 'w') as f:
-            data = {
-                "weekly_goal": weekly_goal,
-                "daily_goal": daily_goal,
-                "weekly_total": weekly_total,
-                "daily_total": daily_total
-            }
-            json.dump(data, f)
-    except FileNotFoundError:
-        print("goals-and-totals.json file not found")
+def save_data(data = None):
+    with open("goals-and-totals.json", 'w') as f:
+        if data is None: data = {
+            "weekly_goal": weekly_goal,
+            "daily_goal": daily_goal,
+            "weekly_total": weekly_total,
+            "daily_total": daily_total
+        }
+        json.dump(data, f)
 
 
 
@@ -140,11 +137,24 @@ def save_data():
 
 
 if __name__ == '__main__':
+    # Welcome
+    print(f"\n{'  Welcome to Repitition Counter!  ':*^50}")
+    print(f"{'Please type `help` for a list of all available commands':*^50}")
+    # create json for first time with default values
+    if not os.path.exists("goals-and-totals.json"):
+        save_data({
+                "weekly_goal": 3000,
+                "daily_goal": 600,
+                "weekly_total": 0,
+                "daily_total": 0
+            })
+    # fetch and print
     fetch_data()
     print_data()
+    # finally start the main loop for command execution
     while(True):
         print("\n>>", end='')
-        skip_flag = command_handler(input())
+        skip_flag = command_handler(input()) # sometimes we don't want to display the data after every command
         if skip_flag: continue
         fetch_data()
         print_data()
