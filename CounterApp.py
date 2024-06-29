@@ -1,11 +1,6 @@
 import json
 import os.path
 
-#TODO:
-# change command to SET weekly goal/daily goal
-# Calculate daily goal based on weekly/5
-
-
 with open("help.txt") as f:
     HELP_TEXT = f.read()
 
