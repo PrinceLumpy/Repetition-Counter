@@ -1,6 +1,6 @@
 # Repetition Counter
 
-Repetition Counter is a simple python script that will help aspiring break dancers keep track of the number of repetitions of each exercise they do every week.
+Repetition Counter is a simple python script created to help break dancers keep track of the number of repetitions they do each week.
 
 ## Usage
 run the script with `python CounterApp.py`
