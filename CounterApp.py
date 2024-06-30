@@ -23,16 +23,24 @@ def fetch_data():
     except FileNotFoundError:
         print("goals-and-totals.json file not found")
 
-def print_data():
+def print_data(display_flag = False):
     print(f"{'~'*52}")
     print(f"|{'Weekly Total: ':12}{weekly_total:4}/{weekly_goal:4}{'Daily Total:':>19}{daily_total:>4}/{daily_goal:3}|")
     print(f"|{'Day: ':5}{days_taken:4}{' '*41}|")
-    daily_success_message="You completed  your daily goal!"
-    weekly_success_message=f"Congratulations! You've reached your goal in {days_taken} days!"
     if weekly_total >= weekly_goal:
+        weekly_success_message=f"Congratulations! You've reached your goal!!"
         print(f"|{weekly_success_message:^50}|")
     elif daily_total >= daily_goal:
+        daily_success_message="You completed  your daily goal!"
         print(f"|{daily_success_message:^50}|")
+    print(f"{'~'*52}")
+    if display_flag: print_reps_each_day()
+
+def print_reps_each_day():
+    with open("goals-and-totals.json", 'r') as f:
+        data = json.load(f)
+        for i in range(1, data["days_taken"]):
+            print(f"|Day {i}: {data[f'day{i}_reps']}{' '*(43-len(str(data[f'day{i}_reps'])))}|")
     print(f"{'~'*52}")
         
 def command_handler(command):
@@ -44,7 +52,7 @@ def command_handler(command):
         print(HELP_TEXT)
         return True
     elif command == "display":
-        print_data()
+        print_data(display_flag=True)
         return True
     # new week/day
     elif command == "new week":
@@ -53,18 +61,19 @@ def command_handler(command):
         if response == "" or response.lower() == "y":
             weekly_total = 0
             daily_total = 0
-            days_taken = 0
+            days_taken = 1
     elif command == "new day":
         print("are you sure you want to start a new day? (Y/n)")
         response = input()
         if response == "" or response.lower() == "y":
             with open("goals-and-totals.json", 'r') as f:
                 data = json.load(f)
-                key = f"day{days_taken}_reps"
-                data[key] = daily_total
-                data["daily_total"] = 0
-                data["days_taken"] += 1
-            save_data(data)
+            key = f"day{days_taken}_reps"
+            data[key] = daily_total
+            data["daily_total"] = 0
+            data["days_taken"] += 1
+            with open("goals-and-totals.json", 'w') as f:
+                json.dump(data, f)
             return False
     # set goals
     elif command.startswith("reset goals"):
@@ -127,19 +136,19 @@ def command_handler(command):
         print(f"\"{command}\" is not recognized as an internal command. please use command \'help\' to see all available commands")
         return True
     
-    save_data()
+    update_data()
     
 
-def save_data(data = None):
+def update_data():
+    with open("goals-and-totals.json", 'r') as f:
+        data = json.load(f)                  # Fetch the data
+        data["weekly_goal"] = weekly_goal    # Update the data
+        data["daily_goal"] = daily_goal
+        data["weekly_total"] = weekly_total
+        data["daily_total"] = daily_total
+        data["days_taken"] = days_taken
     with open("goals-and-totals.json", 'w') as f:
-        if data is None: data = {
-            "weekly_goal": weekly_goal,
-            "daily_goal": daily_goal,
-            "weekly_total": weekly_total,
-            "daily_total": daily_total,
-            "days_taken": days_taken
-        }
-        json.dump(data, f)
+        json.dump(data, f)                   # Write the data back to the file
 
 
 
@@ -152,13 +161,15 @@ if __name__ == '__main__':
     print(f"{'Please type `help` for a list of all available commands':*^50}")
     # create json for first time with default values
     if not os.path.exists("goals-and-totals.json"):
-        save_data({
+        with open("goals-and-totals.json", 'w') as f:
+            data = {
                 "weekly_goal": 3000,
                 "daily_goal": 600,
                 "weekly_total": 0,
                 "daily_total": 0,
                 "days_taken": 1
-            })
+            }
+            json.dump(data, f)
     # fetch and print
     fetch_data()
     print_data()
