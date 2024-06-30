@@ -37,16 +37,16 @@ def create_default_data():
     fetch_data()
 
 def print_data(display_flag=False):
-    print(f"{'~'*52}")
-    print(f"|{'Weekly Total: ':12}{weekly_total:4}/{weekly_goal:4}{'Daily Total:':>19}{daily_total:>4}/{daily_goal:3}|")
-    print(f"|{'Day: ':5}{days_taken:4}{' '*41}|")
+    print(f"{'~'*49}")
+    print(f"|{'Weekly Total: ':12}{weekly_total:4}/{weekly_goal:4}{'Daily Total:':>16}{daily_total:>4}/{daily_goal:3}|")
+    print(f"|{'Day: ':5}{days_taken:4}{' '*38}|")
     if weekly_total >= weekly_goal:
         weekly_success_message = f"Congratulations! You've reached your goal!!"
-        print(f"|{weekly_success_message:^50}|")
+        print(f"|{weekly_success_message:^47}|")
     elif daily_total >= daily_goal:
         daily_success_message = "You completed your daily goal!"
-        print(f"|{daily_success_message:^50}|")
-    print(f"{'~'*52}")
+        print(f"|{daily_success_message:^47}|")
+    print(f"{'~'*49}")
     if display_flag:
         print_reps_each_day()
 
@@ -58,8 +58,8 @@ def print_reps_each_day():
         data = json.load(f)
         for i in range(1, data["days_taken"]):
             day_number_display = str(i) + ':'
-            print(f"|Day {day_number_display:<5} {data[f'day{i}_reps']:>40}|")
-    print(f"{'~'*52}")
+            print(f"|Day {day_number_display:<5} {data[f'day{i}_reps']:>37}|")
+    print(f"{'~'*49}")
         
 def command_handler(command):
     global weekly_goal, weekly_total, daily_goal, daily_total, days_taken
@@ -96,7 +96,7 @@ def command_handler(command):
             data["days_taken"] += 1
             with open("goals-and-totals.json", 'w') as f:
                 json.dump(data, f)
-            print("day", days_taken, "reps saved")
+            print("day", days_taken, "reps saved, use `display` to see them")
             return False
         print("cancelled")
     # set goals
