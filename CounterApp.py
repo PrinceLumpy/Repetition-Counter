@@ -21,32 +21,51 @@ def fetch_data():
             daily_total = data["daily_total"]
             days_taken = data["days_taken"]
     except FileNotFoundError:
-        print("goals-and-totals.json file not found")
+        print("goals-and-totals.json file not found, creating a new one...")
+        create_default_data()
 
-def print_data(display_flag = False):
+def create_default_data():
+    data = {
+        "weekly_goal": 3000,
+        "daily_goal": 600,
+        "weekly_total": 0,
+        "daily_total": 0,
+        "days_taken": 1
+    }
+    with open("goals-and-totals.json", 'w') as f:
+        json.dump(data, f)
+    fetch_data()
+
+def print_data(display_flag=False):
     print(f"{'~'*52}")
     print(f"|{'Weekly Total: ':12}{weekly_total:4}/{weekly_goal:4}{'Daily Total:':>19}{daily_total:>4}/{daily_goal:3}|")
     print(f"|{'Day: ':5}{days_taken:4}{' '*41}|")
     if weekly_total >= weekly_goal:
-        weekly_success_message=f"Congratulations! You've reached your goal!!"
+        weekly_success_message = f"Congratulations! You've reached your goal!!"
         print(f"|{weekly_success_message:^50}|")
     elif daily_total >= daily_goal:
-        daily_success_message="You completed  your daily goal!"
+        daily_success_message = "You completed your daily goal!"
         print(f"|{daily_success_message:^50}|")
     print(f"{'~'*52}")
-    if display_flag: print_reps_each_day()
+    if display_flag:
+        print_reps_each_day()
+
 
 def print_reps_each_day():
+    if days_taken == 1:
+        return
     with open("goals-and-totals.json", 'r') as f:
         data = json.load(f)
         for i in range(1, data["days_taken"]):
-            print(f"|Day {i}: {data[f'day{i}_reps']}{' '*(43-len(str(data[f'day{i}_reps'])))}|")
+            day_number_display = str(i) + ':'
+            print(f"|Day {day_number_display:<5} {data[f'day{i}_reps']:>40}|")
     print(f"{'~'*52}")
         
 def command_handler(command):
     global weekly_goal, weekly_total, daily_goal, daily_total, days_taken
     # general
     if command == "quit":
+        print("Goodbye!")
         quit()
     elif command == "help":
         print(HELP_TEXT)
@@ -62,6 +81,9 @@ def command_handler(command):
             weekly_total = 0
             daily_total = 0
             days_taken = 1
+            print("New week started! Let's do this!")
+        else:
+            print("cancelled")
     elif command == "new day":
         print("are you sure you want to start a new day? (Y/n)")
         response = input()
@@ -74,11 +96,14 @@ def command_handler(command):
             data["days_taken"] += 1
             with open("goals-and-totals.json", 'w') as f:
                 json.dump(data, f)
+            print("day", days_taken, "reps saved")
             return False
+        print("cancelled")
     # set goals
     elif command.startswith("reset goals"):
         daily_goal = 600
         weekly_goal = 3000
+        print("goals reset to default values")
     elif command.startswith("set daily goal"):
         try:
             value = int(command.split(' ')[3])
@@ -89,6 +114,7 @@ def command_handler(command):
                 print("error: set daily goal <value>, daily goal cannot be more than weekly goal")
                 return True
             daily_goal = value
+            print("daily goal set to", value)
         except:
             print("error: set daily goal <value>, <value> should be of type <int>")
             return True
@@ -102,6 +128,7 @@ def command_handler(command):
                 print("error: set weekly goal <value>, weekly goal cannot be less than daily goal")
                 return True
             weekly_goal = value
+            print("weekly goal set to", value)
         except:
             print("error: set weekly goal <value>, <value> should be of type <int>")
             return True
@@ -116,6 +143,7 @@ def command_handler(command):
                 value = -daily_total
             daily_total += value
             weekly_total += value
+            print("added ", value, " reps, let's go!")
         except:
             print("error: add <value>, <value> should be of type <int>")
             return True
@@ -129,6 +157,7 @@ def command_handler(command):
                 value = daily_total
             daily_total -= value
             weekly_total -= value
+            print("subtracted ", value, " reps, how is that even possible lmao")
         except:
             print("error: sub <value>, <value> should be of type <int>")
             return True
@@ -159,25 +188,17 @@ if __name__ == '__main__':
     # Welcome
     print(f"\n{'  Welcome to Repitition Counter!  ':*^50}")
     print(f"{'Please type `help` for a list of all available commands':*^50}")
-    # create json for first time with default values
-    if not os.path.exists("goals-and-totals.json"):
-        with open("goals-and-totals.json", 'w') as f:
-            data = {
-                "weekly_goal": 3000,
-                "daily_goal": 600,
-                "weekly_total": 0,
-                "daily_total": 0,
-                "days_taken": 1
-            }
-            json.dump(data, f)
+    
     # fetch and print
     fetch_data()
     print_data()
-    # finally start the main loop for command execution
-    while(True):
+    
+    # main loop for command execution
+    while True:
         print("\n>>", end='')
         skip_flag = command_handler(input()) # sometimes we don't want to display the data after every command
-        if skip_flag: continue
+        if skip_flag:
+            continue
         fetch_data()
         print_data()
     
