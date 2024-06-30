@@ -1,9 +1,10 @@
 # Repetition Counter
 
-Repetition Counter is a simple python script created to help break dancers keep track of the number of repetitions they do each week.
+Repetition Counter is a simple python script created to help breakdancers keep track of the number of repetitions they do each week.
 
 ## Usage
 run the script with `python CounterApp.py`
+or just double click `rep-counter.bat` file (I suggest making a desktop shortcut to this!)
 ```
 Commands:
   add <int>                   add <int> to day's total
@@ -13,7 +14,7 @@ Commands:
   set daily goal <int>        set daily_total to <value>
   set weekly goal <int>       set weeky_total to <value>
   reset goals                 set weekly and daily goals to defaults
-  display                     display data
+  display                     display more data
   quit                        exit program
   help                        Show help for commands
 ```
